@@ -16,9 +16,6 @@
     <Filter Include="Resource Files\shaders">
       <UniqueIdentifier>{9b8ccff7-d799-4ee4-acec-ac1399bd786a}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Resource Files\textures">
-      <UniqueIdentifier>{45542d3f-ad3f-4731-955f-7b1daac1fee4}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="glad.c">
@@ -37,12 +34,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="VAO.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="stb_image.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Texture.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -67,16 +58,8 @@
     <ClInclude Include="VAO.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Texture.h">
+    <ClInclude Include="Base.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <Image Include="pop_cat.jpg">
-      <Filter>Resource Files\textures</Filter>
-    </Image>
-    <Image Include="pop_cat.png">
-      <Filter>Resource Files\textures</Filter>
-    </Image>
   </ItemGroup>
 </Project>
