@@ -2,7 +2,7 @@
 
 #include <vector>
 
-GLfloat vertices[] = {
+GLfloat origin_vert[] = {
 	-0.9f, -0.9f, -0.9f,
 	-0.9f, -0.9f, -0.3f,
 	-0.3f, -0.9f, -0.3f,
@@ -41,21 +41,6 @@ GLuint indices[] = {
 	5, 6, 4,
 };
 
-GLuint indices2[] = {
-	0, 1, 2,
-	0, 2, 3,
-	0, 1, 4,
-	1, 4, 5,
-	1, 2, 6,
-	5, 6, 1,
-	2, 3, 6,
-	3, 6, 7,
-	3, 0, 7,
-	0, 7, 4,
-	6, 7, 4,
-	5, 6, 4,
-};
-
 //void generate_first_row(std::vector<std::vector<GLfloat>>& all_verts) {
 //	all_verts.resize(3);
 //	for (int i = 0; i < 3; ++i) {
@@ -79,7 +64,7 @@ void draw_base(std::vector<std::vector<GLfloat>>& all_verts) {
 	glBindVertexArray(*VAO);
 
 	glBindBuffer(GL_ARRAY_BUFFER, *VBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(origin_vert), origin_vert, GL_STATIC_DRAW);
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, *EBO);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);

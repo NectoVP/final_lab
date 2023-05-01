@@ -38,39 +38,26 @@ int main() {
 	
 	Shader shader("default.vert", "default.frag");
 
-	GLuint a, b, c, d;
-	GLuint VAO;
-	GLuint VAO2;
-	GLuint VBO;
-	GLuint VBO2;
-	GLuint EBO;
-	GLuint EBO2;
-	/*
 	std::vector<GLfloat*> all_verts;
-	all_verts.push_back(vertices);
+	all_verts.push_back(origin_vert);
 	all_verts.push_back(vertices2);
 	std::vector<GLuint> VAOs(all_verts.size());
 	std::vector<GLuint> VBOs(all_verts.size());
-	std::vector<GLuint> EBOs(all_verts.size());*/
+	std::vector<GLuint> EBOs(all_verts.size());
 
 	GLuint color_u = glGetUniformLocation(shader.ID, "aColor");
 	glUniform4f(color_u, 0.09f, 0.05f, 0.02f, 1.0f);
 	
-	glGenVertexArrays(1, &VAO);
-	glGenVertexArrays(1, &VAO2);
+	for (int i = 0; i < all_verts.size(); ++i) {
+		glGenVertexArrays(1, &VAOs[i]);
+		glGenBuffers(1, &VBOs[i]);
+		glGenBuffers(1, &EBOs[i]);
 	
-	glGenBuffers(1, &VBO);
-	glGenBuffers(1, &VBO2);
-	
-	glGenBuffers(1, &EBO);
-	glGenBuffers(1, &EBO2);
-
-		glBindVertexArray(VAO);
-
-		glBindBuffer(GL_ARRAY_BUFFER, VBO);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_DYNAMIC_DRAW);
+		glBindVertexArray(VAOs[i]);
+		glBindBuffer(GL_ARRAY_BUFFER, VBOs[i]);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(origin_vert), all_verts[i], GL_DYNAMIC_DRAW);
 		
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBOs[i]);
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_DYNAMIC_DRAW);
 		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 
@@ -78,21 +65,7 @@ int main() {
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		glBindVertexArray(0);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-		
-		glBindVertexArray(VAO2);
-
-		glBindBuffer(GL_ARRAY_BUFFER, VBO2);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(vertices2), vertices2, GL_DYNAMIC_DRAW);
-
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO2);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices2), indices2, GL_DYNAMIC_DRAW);
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-
-		glEnableVertexAttribArray(0);
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
-		glBindVertexArray(0);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-
+	}
 
 	float rotation = 0.0f;
 	double prevTime = glfwGetTime();
@@ -128,14 +101,12 @@ int main() {
 		int projLoc = glGetUniformLocation(shader.ID, "proj");
 		glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(proj));
 
-		glBindVertexArray(VAO);
-		glDrawElements(GL_TRIANGLES, sizeof(indices)/sizeof(int), GL_UNSIGNED_INT, 0);
-
-		glBindVertexArray(VAO2);
-		glDrawElements(GL_TRIANGLES, sizeof(indices2)/sizeof(int), GL_UNSIGNED_INT, 0);
+		for (int i = 0; i < all_verts.size(); ++i) {
+			glBindVertexArray(VAOs[i]);
+			glDrawElements(GL_TRIANGLES, sizeof(indices)/sizeof(int), GL_UNSIGNED_INT, 0);
+		}
 
 		glfwSwapBuffers(window);
-
 		glfwPollEvents();
 	}
 
