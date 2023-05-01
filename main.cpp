@@ -38,20 +38,62 @@ int main() {
 	
 	Shader shader("default.vert", "default.frag");
 
-	VAO VAO1;
-	VAO1.Bind();
+	GLuint a, b, c, d;
+	GLuint VAO;
+	GLuint VAO2;
+	GLuint VBO;
+	GLuint VBO2;
+	GLuint EBO;
+	GLuint EBO2;
+	/*
+	std::vector<GLfloat*> all_verts;
+	all_verts.push_back(vertices);
+	all_verts.push_back(vertices2);
+	std::vector<GLuint> VAOs(all_verts.size());
+	std::vector<GLuint> VBOs(all_verts.size());
+	std::vector<GLuint> EBOs(all_verts.size());*/
 
-	VBO VBO1(vertices, sizeof(vertices));
-	EBO EBO1(indices, sizeof(indices));
-
-	VAO1.LinkAttrib(VBO1, 0, 3, GL_FLOAT, 3 * sizeof(float), (void*)0);
 	GLuint color_u = glGetUniformLocation(shader.ID, "aColor");
 	glUniform4f(color_u, 0.09f, 0.05f, 0.02f, 1.0f);
 	
-	VAO1.UnBind();
-	VBO1.UnBind();
-	EBO1.UnBind();
+	glGenVertexArrays(1, &VAO);
+	glGenVertexArrays(1, &VAO2);
 	
+	glGenBuffers(1, &VBO);
+	glGenBuffers(1, &VBO2);
+	
+	glGenBuffers(1, &EBO);
+	glGenBuffers(1, &EBO2);
+
+		glBindVertexArray(VAO);
+
+		glBindBuffer(GL_ARRAY_BUFFER, VBO);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_DYNAMIC_DRAW);
+		
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_DYNAMIC_DRAW);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+
+		glEnableVertexAttribArray(0);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+		glBindVertexArray(0);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+		
+		glBindVertexArray(VAO2);
+
+		glBindBuffer(GL_ARRAY_BUFFER, VBO2);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(vertices2), vertices2, GL_DYNAMIC_DRAW);
+
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO2);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices2), indices2, GL_DYNAMIC_DRAW);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+
+		glEnableVertexAttribArray(0);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+		glBindVertexArray(0);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+
 	float rotation = 0.0f;
 	double prevTime = glfwGetTime();
 
@@ -64,9 +106,11 @@ int main() {
 		shader.Activate();
 
 		double crnt_time = glfwGetTime();
-		if (crnt_time - prevTime >= 1 / 60) {
-			rotation += 0.05f;
+		if (crnt_time - prevTime >= 1) {
+			rotation += 90.0f;
 			prevTime = crnt_time;
+			if (rotation >= 360.0f)
+				rotation = 0.0f;
 		}
 
 		glm::mat4 model = glm::mat4(1.0f);
@@ -74,9 +118,8 @@ int main() {
 		glm::mat4 proj = glm::mat4(1.0f);
 		
 		model = glm::rotate(model, glm::radians(rotation), glm::vec3(0.0, 1.0f, 0.0f));
-		
-		view = glm::translate(view, glm::vec3(0.5f, -0.5f, -2.0f));
-		proj = glm::perspective(glm::radians(120.0f), (float)(width / height), 0.1f, 100.0f);
+		view = glm::translate(view, glm::vec3(-1.0f, -0.5f, -3.5f));
+		proj = glm::perspective(glm::radians(90.0f), (float)(width / height), 0.1f, 100.0f);
 
 		int modelLoc = glGetUniformLocation(shader.ID, "model");
 		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
@@ -85,8 +128,12 @@ int main() {
 		int projLoc = glGetUniformLocation(shader.ID, "proj");
 		glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(proj));
 
-		VAO1.Bind();
+		glBindVertexArray(VAO);
 		glDrawElements(GL_TRIANGLES, sizeof(indices)/sizeof(int), GL_UNSIGNED_INT, 0);
+
+		glBindVertexArray(VAO2);
+		glDrawElements(GL_TRIANGLES, sizeof(indices2)/sizeof(int), GL_UNSIGNED_INT, 0);
+
 		glfwSwapBuffers(window);
 
 		glfwPollEvents();
