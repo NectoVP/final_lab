@@ -147,12 +147,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="EBO.cpp" />
     <ClCompile Include="glad.c" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Shader.cpp" />
-    <ClCompile Include="VAO.cpp" />
-    <ClCompile Include="VBO.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="default.frag" />
@@ -160,10 +157,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Base.h" />
-    <ClInclude Include="EBO.h" />
     <ClInclude Include="Shader.h" />
-    <ClInclude Include="VAO.h" />
-    <ClInclude Include="VBO.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
