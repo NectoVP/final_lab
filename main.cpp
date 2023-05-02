@@ -1,4 +1,6 @@
 #include <iostream>
+#include <set>
+
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
@@ -43,8 +45,8 @@ void rotate_by_angle(float angle, Shader& shader) {
 	glm::mat4 view = glm::mat4(1.0f);
 	glm::mat4 proj = glm::mat4(1.0f);
 
-	model = glm::rotate(model, glm::radians(angle), glm::vec3(0.0, 1.0f, 0.0f));
-	view = glm::translate(view, glm::vec3(-1.0f, -0.5f, -3.5f));
+	model = glm::rotate(model, glm::radians(angle), glm::vec3(0.0f, 1.0f, 0.0f));
+	view = glm::translate(view, glm::vec3(-2.0f, 1.5f, -3.5f));
 	proj = glm::perspective(glm::radians(90.0f), (float)(width / height), 0.1f, 100.0f);
 
 	int modelLoc = glGetUniformLocation(shader.ID, "model");
@@ -67,6 +69,10 @@ int main() {
 	std::vector<GLuint> VAOs;
 	create_cubes(all_verts, VAOs);
 
+	std::vector<GLfloat*> all_color_verts;
+	std::vector<GLuint> color_VAOs;
+	create_colors(all_color_verts, color_VAOs);
+
 	float rotation = 0.0f;
 	double prevTime = glfwGetTime();
 
@@ -76,8 +82,8 @@ int main() {
 	GLuint Cube_or_side_color_u = glGetUniformLocation(shader.ID, "aCube_or_side_color");
 	
 	while (!glfwWindowShouldClose(window)) {
-		glUniform4f(color_u, 1.0f, 0.0f, 0.0f, 1.0f);
-		glClearColor(0.07f, 0.13f, 0.17f, 1.0f);
+		glUniform4f(color_u, 0.1f, 0.1f, 0.1f, 1.0f);
+		glClearColor(1.0f, 0.97f, 0.84f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		shader.Activate();
@@ -89,30 +95,54 @@ int main() {
 			if (rotation >= 360.0f)
 				rotation = 0.0f;
 		}
+		 		//rotation = 40.0f;
+		flag = 1;
 
-		for (int i = 0; i < 9; ++i) {
-			flag = i % 2;
+		bool show_cubes = true;
+		//rotate_by_angle(rotation, shader);
+		if (show_cubes) {
+			for (int i = 0; i < 9; ++i) {
+				//flag = i % 2;
+				glUniform1i(Cube_or_side_color_u, flag);
+				glBindVertexArray(VAOs[i]);
+				rotate_by_angle(rotation, shader);
+				glDrawElements(GL_TRIANGLES, sizeof(indices) / sizeof(int), GL_UNSIGNED_INT, 0);
+			}
+			for (int i = 9; i < 18; ++i) {
+				//flag = i % 2;
+				glUniform1i(Cube_or_side_color_u, flag);
+				glBindVertexArray(VAOs[i]);
+				rotate_by_angle(0, shader);
+				glDrawElements(GL_TRIANGLES, sizeof(indices) / sizeof(int), GL_UNSIGNED_INT, 0);
+			}
+			for (int i = 18; i < all_verts.size(); ++i) {
+				//flag = i % 2;
+				glUniform1i(Cube_or_side_color_u, flag);
+				glBindVertexArray(VAOs[i]);
+				rotate_by_angle(0, shader);
+				glDrawElements(GL_TRIANGLES, sizeof(indices) / sizeof(int), GL_UNSIGNED_INT, 0);
+			}
+		}
+		std::set<int> vs = {0,1,2,9,10,11,18,19,20,27,28,29,45,46,47,48,49,50,51,52,53};
+		for (int i = 0; i < all_color_verts.size(); ++i) {
+			if (vs.find(i) != vs.end())
+				continue;
+			flag = 0;
 			glUniform1i(Cube_or_side_color_u, flag);
-			glBindVertexArray(VAOs[i]);
+			glBindVertexArray(color_VAOs[i]);
+			rotate_by_angle(0, shader);
+			glDrawElements(GL_TRIANGLES, sizeof(color_indices) / sizeof(int), GL_UNSIGNED_INT, 0);
+		}
+
+		for (int i = 0; i < all_color_verts.size(); ++i) {
+			if (vs.find(i) == vs.end())
+				continue;
+			flag = 0;
+			glUniform1i(Cube_or_side_color_u, flag);
+			glBindVertexArray(color_VAOs[i]);
 			rotate_by_angle(rotation, shader);
-			glDrawElements(GL_TRIANGLES, sizeof(indices)/sizeof(int), GL_UNSIGNED_INT, 0);
+			glDrawElements(GL_TRIANGLES, sizeof(color_indices) / sizeof(int), GL_UNSIGNED_INT, 0);
 		}
-		for (int i = 9; i < 18; ++i) {
-			flag = i % 2;
-			glUniform1i(Cube_or_side_color_u, flag);
-			glBindVertexArray(VAOs[i]);
-			rotate_by_angle(-rotation, shader);
-			glDrawElements(GL_TRIANGLES, sizeof(indices) / sizeof(int), GL_UNSIGNED_INT, 0);
-		}
-		for (int i = 18; i < all_verts.size(); ++i) {
-			flag = i % 2;
-			glUniform1i(Cube_or_side_color_u, flag);
-			glBindVertexArray(VAOs[i]);
-			rotate_by_angle(rotation, shader);
-			glDrawElements(GL_TRIANGLES, sizeof(indices) / sizeof(int), GL_UNSIGNED_INT, 0);
-		}
-
-
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();

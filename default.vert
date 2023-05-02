@@ -17,6 +17,8 @@ uniform int aCube_or_side_color;
 void main()
 {
 	gl_Position = proj * view * model * vec4(aPos, 1.0); 
-	//color = aColor;
-	color = vec4(aaa_Color.x, aaa_Color.y , aaa_Color.z, 1.0f);
+	if(aCube_or_side_color == 0)
+		color = vec4(aColor, 1.0f);
+	else
+		color = vec4(aaa_Color.x, aaa_Color.y , aaa_Color.z, 1.0f);
 }
