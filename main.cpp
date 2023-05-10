@@ -25,13 +25,15 @@ void draw(std::list<std::tuple<uint64_t, float, glm::vec3>>& turns, std::vector<
 	int viewLoc = glGetUniformLocation(shader.ID, "view");
 	int projLoc = glGetUniformLocation(shader.ID, "proj");
 
-	view = glm::translate(view, glm::vec3(0.0f, -1.5f, -3.5f));
+	view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.5f));
 	proj = glm::perspective(glm::radians(90.0f), (float)(width / height), 0.1f, 100.0f);
 
 	glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
 	glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(proj));
 
 	model = glm::rotate(model, glm::radians(45.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+	model = glm::rotate(model, glm::radians(35.0f), glm::vec3(1.0f, 0.0f, 1.0f));
+	model = glm::scale(model, glm::vec3(1.3f, 1.3f, 1.3f));
 	glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
 	
 	for (int i = 0; i < VAOs.size(); ++i) {
@@ -52,6 +54,7 @@ void draw(std::list<std::tuple<uint64_t, float, glm::vec3>>& turns, std::vector<
 			}
 		}
 		//std::cout << std::endl;
+		model = glm::scale(model, glm::vec3(1.3f, 1.3f, 1.3f));
 		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
 		glBindVertexArray(color_VAOs[i]);
 		//if (i == 0 || i == 1 || i == 2)
@@ -96,6 +99,7 @@ int main() {
 	std::list<std::tuple<uint64_t, float, glm::vec3>> turns;
 
 	turns.push_back(std::make_tuple(CUBE_ROTATION, 45.0f, glm::vec3(0.0f, 1.0f, 0.0f)));
+	turns.push_back(std::make_tuple(CUBE_ROTATION, 35.0f, glm::vec3(1.0f, 0.0f, 1.0f)));
 	
 	while (!glfwWindowShouldClose(window)) {
 		
