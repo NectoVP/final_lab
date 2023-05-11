@@ -8,10 +8,10 @@ void generate_first_row(std::vector<GLfloat*>& all_verts) {
 	float offset = 0;
 
 	for (int i = 0; i < 3; ++i, offset += 0.6f) {
-		all_verts[i] = new GLfloat[48];
-		for (int j = 0; j < 48; ++j) {
+		all_verts[i] = new GLfloat[24];
+		for (int j = 0; j < 24; ++j) {
 			all_verts[i][j] = origin_vert[j];
-			if (j % 6 == 0) 
+			if (j % 3 == 0) 
 				all_verts[i][j] += offset;
 		}
 	}	
@@ -26,10 +26,10 @@ void generate_first_layer(std::vector<GLfloat*>& all_verts) {
 			i = 0;
 			offset += 0.6f;
 		}
-		all_verts[k] = new GLfloat[48];
-		for (int j = 0; j < 48; ++j) {
+		all_verts[k] = new GLfloat[24];
+		for (int j = 0; j < 24; ++j) {
 			all_verts[k][j] = all_verts[i][j];
-			if (j % 6 == 2)
+			if (j % 3 == 2)
 				all_verts[k][j] += offset;
 		}
 	}
@@ -44,10 +44,10 @@ void generate_whole_cube(std::vector<GLfloat*>& all_verts) {
 			i = 0;
 			offset += 0.6f;
 		}
-		all_verts[k] = new GLfloat[48];
-		for (int j = 0; j < 48; ++j) {
+		all_verts[k] = new GLfloat[24];
+		for (int j = 0; j < 24; ++j) {
 			all_verts[k][j] = all_verts[i][j];
-			if (j % 6 == 1)
+			if (j % 3 == 1)
 				all_verts[k][j] += offset;
 		}
 	}
@@ -77,11 +77,9 @@ void create_cubes(std::vector<GLfloat*>& all_verts, std::vector<GLuint>& VAOs) {
 
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, Global_EBO);
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_DYNAMIC_DRAW);
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
-		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 
 		glEnableVertexAttribArray(0);
-		glEnableVertexAttribArray(1);
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		glBindVertexArray(0);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
@@ -94,10 +92,10 @@ void generate_first_row_of_colors(std::vector<GLfloat*>& all_color_verts,
 	float offset = 0;
 
 	for (int i = start; i < start + 3; ++i) {
-		all_color_verts[i] = new GLfloat[24];
-		for (int j = 0; j < 24; ++j) {
+		all_color_verts[i] = new GLfloat[12];
+		for (int j = 0; j < 12; ++j) {
 			all_color_verts[i][j] = colors_origin[j + global_offset];
-			if (j % 6 == axes)
+			if (j % 3 == axes)
 				all_color_verts[i][j] += offset;
 		}
 		if (direction)
@@ -121,10 +119,10 @@ void generate_first_side_of_colors(std::vector<GLfloat*>& all_color_verts,
 			else
 				offset -= 0.6f;
 		}
-		all_color_verts[k] = new GLfloat[24];
-		for (int j = 0; j < 24; ++j) {
+		all_color_verts[k] = new GLfloat[12];
+		for (int j = 0; j < 12; ++j) {
 			all_color_verts[k][j] = all_color_verts[i][j];
-			if (j % 6 == axes)
+			if (j % 3 == axes)
 				all_color_verts[k][j] += offset;
 		}
 	}
@@ -134,23 +132,23 @@ void create_colors(std::vector<GLfloat*>& all_color_verts, std::vector<GLuint>& 
 	
 	all_color_verts.resize(54);
 
-	generate_first_row_of_colors(all_color_verts, 24*0, 0, 2, true);
-	generate_first_side_of_colors(all_color_verts, 24*0, 0, 1, true);
+	generate_first_row_of_colors(all_color_verts, 12*0, 0, 2, true);
+	generate_first_side_of_colors(all_color_verts, 12*0, 0, 1, true);
 
-	generate_first_row_of_colors(all_color_verts, 24*1, 9, 0, true);
-	generate_first_side_of_colors(all_color_verts, 24*1, 9, 1, true);
+	generate_first_row_of_colors(all_color_verts, 12*1, 9, 0, true);
+	generate_first_side_of_colors(all_color_verts, 12*1, 9, 1, true);
 
-	generate_first_row_of_colors(all_color_verts, 24*2, 18, 2, false);
-	generate_first_side_of_colors(all_color_verts, 24*2, 18, 1, true);
+	generate_first_row_of_colors(all_color_verts, 12*2, 18, 2, false);
+	generate_first_side_of_colors(all_color_verts, 12*2, 18, 1, true);
 
-	generate_first_row_of_colors(all_color_verts, 24*3, 27, 0, false);
-	generate_first_side_of_colors(all_color_verts, 24*3, 27, 1, true);
+	generate_first_row_of_colors(all_color_verts, 12*3, 27, 0, false);
+	generate_first_side_of_colors(all_color_verts, 12*3, 27, 1, true);
 
-	generate_first_row_of_colors(all_color_verts, 24*4, 36, 0, true);
-	generate_first_side_of_colors(all_color_verts, 24*4, 36, 2, true);
+	generate_first_row_of_colors(all_color_verts, 12*4, 36, 0, true);
+	generate_first_side_of_colors(all_color_verts, 12*4, 36, 2, true);
 	
-	generate_first_row_of_colors(all_color_verts, 24*5, 45, 0, true);
-	generate_first_side_of_colors(all_color_verts, 24*5, 45, 2, true);
+	generate_first_row_of_colors(all_color_verts, 12*5, 45, 0, true);
+	generate_first_side_of_colors(all_color_verts, 12*5, 45, 2, true);
 	
 	//all_color_verts.push_back(colors_origin);
 
@@ -170,11 +168,9 @@ void create_colors(std::vector<GLfloat*>& all_color_verts, std::vector<GLuint>& 
 
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, Global_EBO);
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(color_indices), color_indices, GL_DYNAMIC_DRAW);
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
-		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
-
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+		
 		glEnableVertexAttribArray(0);
-		glEnableVertexAttribArray(1);
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		glBindVertexArray(0);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);

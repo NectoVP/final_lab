@@ -1,8 +1,5 @@
 #include "Utility.h"
 
-static const int width = 800;
-static const int height = 800;
-
 void create_window(GLFWwindow** window) {
 	glfwInit();
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
