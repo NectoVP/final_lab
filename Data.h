@@ -1,5 +1,3 @@
-#pragma once
-
 #ifndef H_DATA
 #define H_DATA
 
@@ -107,7 +105,7 @@ GLuint color_indices[] = {
 
 */
 
-uint64_t CUBE_ROTATION = 0b1111111111111111111111111111111111111111111111111111111111111111;
+std::vector<int> void_v;
 
 std::vector<int> all = {
 	0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,
@@ -191,39 +189,15 @@ std::vector<int> middle = {
 	41,40,39,7,4,1,48,49,50,19,22,25,41,40,39
 };
 
-std::vector<int> middle_edge = {
-	
-};
-
-std::vector<int> middle_corner = {
-	
-};
-
 std::vector<int> equator = {
 	3,4,5,12,13,14,21,22,23,30,31,32,3,4,5
-};
-
-std::vector<int> equator_edge = {
-
-};
-
-std::vector<int> equator_corner = {
-
 };
 
 std::vector<int> side = {
 	37,40,43,16,13,10,52,49,46,28,31,34,37,40,43
 };
 
-std::vector<int> side_edge = {
-
-};
-
-std::vector<int> side_corner = {
-
-};
-
-std::vector<glm::vec3> cfee = {
+std::vector<glm::vec3> side_colors = {
 	glm::vec3(0.26f, 0.27f, 0.25f),
 	glm::vec3(0.0f, 1.0f, 0.0f),
 	glm::vec3(1.0f, 0.0f, 0.0f),
@@ -234,7 +208,6 @@ std::vector<glm::vec3> cfee = {
 };
 
 #endif
-
 
 /*
 кубики

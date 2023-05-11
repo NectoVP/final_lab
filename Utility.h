@@ -9,12 +9,9 @@
 #include <glm/gtc/type_ptr.hpp>
 
 #include "Shader.h"
-#include "Data.h"
 
 void create_window(GLFWwindow** window);
 
 void free_all_memory(GLFWwindow** window, std::vector<GLfloat*>& all_verts);
-
-void get_rotation(double prev_time, float& rotation);
 
 void init_frame(Shader& shader);

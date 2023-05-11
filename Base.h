@@ -59,8 +59,6 @@ void create_cubes(std::vector<GLfloat*>& all_verts, std::vector<GLuint>& VAOs) {
 	generate_first_layer(all_verts);
 	generate_whole_cube(all_verts);
 
-	//all_verts.push_back(origin_vert);
-
 	VAOs.resize(all_verts.size());
 	std::vector<GLuint> VBOs(all_verts.size());
 	
@@ -150,8 +148,6 @@ void create_colors(std::vector<GLfloat*>& all_color_verts, std::vector<GLuint>& 
 	generate_first_row_of_colors(all_color_verts, 12*5, 45, 0, true);
 	generate_first_side_of_colors(all_color_verts, 12*5, 45, 2, true);
 	
-	//all_color_verts.push_back(colors_origin);
-
 	color_VAOs.resize(all_color_verts.size());
 	std::vector<GLuint> VBOs(all_color_verts.size());
 

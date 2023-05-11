@@ -1,5 +1,4 @@
 #include <iostream>
-#include <set>
 #include <list>
 
 #include <glad/glad.h>
@@ -9,9 +8,9 @@
 #include <glm/gtc/type_ptr.hpp>
 
 #include "Data.h"
-#include "Utility.h"
 #include "Base.h"
 #include "Shader.h"
+#include "Utility.h"
 
 void draw(std::vector<GLuint>& VAOs, std::vector<GLuint>& color_VAOs, Shader& shader,
 	std::vector<int>& idx, std::vector<std::vector<int>>& color_idx, 
@@ -37,14 +36,12 @@ void draw(std::vector<GLuint>& VAOs, std::vector<GLuint>& color_VAOs, Shader& sh
 	glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
 	
 	int color_loc = glGetUniformLocation(shader.ID, "aColor");
-	glUniform3f(color_loc, cfee[0].x, cfee[0].y, cfee[0].z);
+	glUniform3f(color_loc, side_colors[0].x, side_colors[0].y, side_colors[0].z);
 
 	for (int i = 0; i < VAOs.size(); ++i) {
 		glBindVertexArray(VAOs[i]);
-		//glDrawElements(GL_TRIANGLES, sizeof(indices) / sizeof(int), GL_UNSIGNED_INT, 0);
+		glDrawElements(GL_TRIANGLES, sizeof(indices) / sizeof(int), GL_UNSIGNED_INT, 0);
 	}
-
-	uint64_t bb = 1;
 
 	if (is_reversed) {
 		std::reverse(edge.begin(), edge.end());
@@ -52,15 +49,13 @@ void draw(std::vector<GLuint>& VAOs, std::vector<GLuint>& color_VAOs, Shader& sh
 		std::reverse(idx.begin(), idx.end());
 	}
 
-	std::vector < std::vector<int>> new_color_idx(color_idx);
+	std::vector <std::vector<int>> new_color_idx(color_idx);
 
-	for (int i = 0, j = 1; j < edge.size(); i++, j++) {
+	for (int i = 0, j = 1; j < edge.size(); i++, j++)
 		new_color_idx[edge[j]][0] = color_idx[edge[i]][0];	
-	}
 	
-	for (int i = 0, j = 1; j < corner.size(); i++, j++) {
+	for (int i = 0, j = 1; j < corner.size(); i++, j++)
 		new_color_idx[corner[j]][0] = color_idx[corner[i]][0];
-	}
 
 	for (int i = 0, j = 3; j < idx.size(); i+=3, j+=3) {
 		new_color_idx[idx[j]][0] = color_idx[idx[i]][0];
@@ -78,15 +73,14 @@ void draw(std::vector<GLuint>& VAOs, std::vector<GLuint>& color_VAOs, Shader& sh
 
 	for (int i = 0; i < 54; ++i) {
 		glBindVertexArray(color_VAOs[i]);
-		glm::vec3 cur_color = cfee[color_idx[i][0]];
+		glm::vec3 cur_color = side_colors[color_idx[i][0]];
 		glUniform3f(color_loc, cur_color.x, cur_color.y, cur_color.z);
 		glDrawElements(GL_TRIANGLES, sizeof(indices) / sizeof(int), GL_UNSIGNED_INT, 0);
 	}
-
 }
 
 void make_turn(std::vector<GLuint>& VAOs, std::vector<GLuint>& color_VAOs, Shader& shader,
-	std::vector<std::vector<int>>& color_idx, char choice) {
+	std::vector<std::vector<int>>& color_idx, char choice, GLFWwindow** window) {
 
 	if (choice == 'd')
 		draw(VAOs, color_VAOs, shader, down, color_idx, down_edge, down_corner, false);
@@ -107,13 +101,13 @@ void make_turn(std::vector<GLuint>& VAOs, std::vector<GLuint>& color_VAOs, Shade
 		draw(VAOs, color_VAOs, shader, back, color_idx, back_edge, back_corner, false);
 
 	if (choice == 'm')
-		draw(VAOs, color_VAOs, shader, middle, color_idx, middle_edge, middle_corner, false);
+		draw(VAOs, color_VAOs, shader, middle, color_idx, void_v, void_v, false);
 
 	if (choice == 'e')
-		draw(VAOs, color_VAOs, shader, equator, color_idx, equator_edge, equator_corner, false);
+		draw(VAOs, color_VAOs, shader, equator, color_idx, void_v, void_v, false);
 
 	if (choice == 's')
-		draw(VAOs, color_VAOs, shader, side, color_idx, side_edge, side_corner, false);
+		draw(VAOs, color_VAOs, shader, side, color_idx, void_v, void_v, false);
 
 	/////////////////////////////////////////////////////////////////////////////////
 
@@ -136,14 +130,75 @@ void make_turn(std::vector<GLuint>& VAOs, std::vector<GLuint>& color_VAOs, Shade
 		draw(VAOs, color_VAOs, shader, back, color_idx, back_edge, back_corner, true);
 
 	if (choice == 'M')
-		draw(VAOs, color_VAOs, shader, middle, color_idx, middle_edge, middle_corner, true);
+		draw(VAOs, color_VAOs, shader, middle, color_idx, void_v, void_v, true);
 
 	if (choice == 'E')
-		draw(VAOs, color_VAOs, shader, equator, color_idx, equator_edge, equator_corner, true);
+		draw(VAOs, color_VAOs, shader, equator, color_idx, void_v, void_v, true);
 
 	if (choice == 'S')
-		draw(VAOs, color_VAOs, shader, side, color_idx, side_edge, side_corner, true);
+		draw(VAOs, color_VAOs, shader, side, color_idx, void_v, void_v, true);
 
+	/////////////////////////////////////////////////////////////////////////////////
+
+	if (choice == 'x') {
+		draw(VAOs, color_VAOs, shader, right, color_idx, right_edge, right_corner, false);
+		glfwSwapBuffers(*window);
+		init_frame(shader);
+		draw(VAOs, color_VAOs, shader, middle, color_idx, void_v, void_v, true);
+		glfwSwapBuffers(*window);
+		init_frame(shader);
+		draw(VAOs, color_VAOs, shader, left, color_idx, left_edge, left_corner, true);
+	}
+
+	if (choice == 'y') {
+		draw(VAOs, color_VAOs, shader, equator, color_idx, void_v, void_v, true);
+		glfwSwapBuffers(*window);
+		init_frame(shader);
+		draw(VAOs, color_VAOs, shader, up, color_idx, up_edge, up_corner, false);
+		glfwSwapBuffers(*window);
+		init_frame(shader);
+		draw(VAOs, color_VAOs, shader, down, color_idx, down_edge, down_corner, true);
+	}
+
+	if (choice == 'z') {
+		draw(VAOs, color_VAOs, shader, side, color_idx, void_v, void_v, false);
+		glfwSwapBuffers(*window);
+		init_frame(shader);
+		draw(VAOs, color_VAOs, shader, front, color_idx, front_edge, front_corner, false);
+		glfwSwapBuffers(*window);
+		init_frame(shader);
+		draw(VAOs, color_VAOs, shader, back, color_idx, back_edge, back_corner, true);
+	}
+
+	if (choice == 'X') {
+		draw(VAOs, color_VAOs, shader, right, color_idx, right_edge, right_corner, true);
+		glfwSwapBuffers(*window);
+		init_frame(shader);
+		draw(VAOs, color_VAOs, shader, middle, color_idx, void_v, void_v, false);
+		glfwSwapBuffers(*window);
+		init_frame(shader);
+		draw(VAOs, color_VAOs, shader, left, color_idx, left_edge, left_corner, false);
+	}
+
+	if (choice == 'Y') {
+		draw(VAOs, color_VAOs, shader, equator, color_idx, void_v, void_v, false);
+		glfwSwapBuffers(*window);
+		init_frame(shader);
+		draw(VAOs, color_VAOs, shader, up, color_idx, up_edge, up_corner, true);
+		glfwSwapBuffers(*window);
+		init_frame(shader);
+		draw(VAOs, color_VAOs, shader, down, color_idx, down_edge, down_corner, false);
+	}
+
+	if (choice == 'Z') {
+		draw(VAOs, color_VAOs, shader, side, color_idx, void_v, void_v, true);
+		glfwSwapBuffers(*window);
+		init_frame(shader);
+		draw(VAOs, color_VAOs, shader, front, color_idx, front_edge, front_corner, true);
+		glfwSwapBuffers(*window);
+		init_frame(shader);
+		draw(VAOs, color_VAOs, shader, back, color_idx, back_edge, back_corner, false);
+	}
 }
 
 int main() {
@@ -160,13 +215,8 @@ int main() {
 	std::vector<GLuint> color_VAOs;
 	create_colors(all_color_verts, color_VAOs);
 
-	float rotation = 45.0f;
-	double prev_time = glfwGetTime();
-
 	glEnable(GL_DEPTH_TEST);
 	
-	glm::vec3 axes(0.0f, 1.0f, 0.0f);
-
 	char choice = '\0';
 
 	std::vector<std::vector<int>> color_idx(all.size(), std::vector<int>(1));
@@ -177,17 +227,16 @@ int main() {
 	while (!glfwWindowShouldClose(window)) {
 		
 		init_frame(shader);
-
-		get_rotation(prev_time, rotation);
-
-		//draw(VAOs, color_VAOs, shader, all, color_idx);
+		draw(VAOs, color_VAOs, shader, void_v, color_idx, void_v, void_v, false);
+		glfwSwapBuffers(window);
 
 		std::cin >> choice;
 
-		make_turn(VAOs, color_VAOs, shader, color_idx, choice);
+		make_turn(VAOs, color_VAOs, shader, color_idx, choice, &window);
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
+
 	}
 
 	free_all_memory(&window, all_verts);
