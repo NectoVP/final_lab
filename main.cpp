@@ -1,5 +1,8 @@
 #include <iostream>
 #include <list>
+#include <string>
+#include <cstdlib>
+#include <ctime>
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -16,25 +19,8 @@ void draw(std::vector<GLuint>& VAOs, std::vector<GLuint>& color_VAOs, Shader& sh
 	std::vector<int>& idx, std::vector<std::vector<int>>& color_idx, 
 	std::vector<int>& edge, std::vector<int>& corner, bool is_reversed) {
 	
-	glm::mat4 model = glm::mat4(1.0f);
-	glm::mat4 view = glm::mat4(1.0f);
-	glm::mat4 proj = glm::mat4(1.0f);
+	do_math_stuff(shader);
 
-	int modelLoc = glGetUniformLocation(shader.ID, "model");
-	int viewLoc = glGetUniformLocation(shader.ID, "view");
-	int projLoc = glGetUniformLocation(shader.ID, "proj");
-
-	view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.5f));
-	proj = glm::perspective(glm::radians(90.0f), (float)(width / height), 0.1f, 100.0f);
-
-	glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
-	glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(proj));
-
-	model = glm::rotate(model, glm::radians(45.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-	model = glm::rotate(model, glm::radians(35.0f), glm::vec3(1.0f, 0.0f, 1.0f));
-	model = glm::scale(model, glm::vec3(1.3f, 1.3f, 1.3f));
-	glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-	
 	int color_loc = glGetUniformLocation(shader.ID, "aColor");
 	glUniform3f(color_loc, side_colors[0].x, side_colors[0].y, side_colors[0].z);
 
@@ -201,7 +187,44 @@ void make_turn(std::vector<GLuint>& VAOs, std::vector<GLuint>& color_VAOs, Shade
 	}
 }
 
+void scramble(std::vector<GLuint>& VAOs, std::vector<GLuint>& color_VAOs, Shader& shader,
+	std::vector<std::vector<int>>& color_idx, char choice, GLFWwindow** window, 
+	std::list<char>& user_input) {
+	
+	std::string possible_turns = "lLrRfFuUbBdDxXyYzZ";
+
+	for (int i = 0; i < 40; ++i) {
+		char choice = possible_turns[rand() % possible_turns.length()];
+		user_input.push_back(choice);
+		make_turn(VAOs, color_VAOs, shader, color_idx, choice, &(*window));
+		glfwSwapBuffers(*window);
+		if (i != 39)
+			init_frame(shader);
+	}
+}
+
+void solve(std::vector<GLuint>& VAOs, std::vector<GLuint>& color_VAOs, Shader& shader,
+	std::vector<std::vector<int>>& color_idx, GLFWwindow** window,
+	std::list<char>& user_input) {
+	int i = 0;
+	for (auto it = user_input.rbegin(); it != user_input.rend(); ++i, ++it) {
+		char choice = *it;
+		if (choice <= 'Z')
+			choice += 32;
+		else
+			choice -= 32;
+		make_turn(VAOs, color_VAOs, shader, color_idx, choice, &(*window));
+		glfwSwapBuffers(*window);
+		if (i != user_input.size() - 1)
+			init_frame(shader);
+	}
+	user_input.clear();
+}
+
 int main() {
+
+	srand(time(NULL));
+
 	GLFWwindow* window;
 	create_window(&window);
 
@@ -224,22 +247,30 @@ int main() {
 		color_idx[all[i]][0] = all[i] / 9 + 1;
 	}
 
+	std::list<char> user_input;
+
 	while (!glfwWindowShouldClose(window)) {
-		
 		init_frame(shader);
 		draw(VAOs, color_VAOs, shader, void_v, color_idx, void_v, void_v, false);
 		glfwSwapBuffers(window);
 
 		std::cin >> choice;
 
-		make_turn(VAOs, color_VAOs, shader, color_idx, choice, &window);
+		if (choice == '{') {
+			scramble(VAOs, color_VAOs, shader, color_idx, choice, &window, user_input);
+		}
+		else if (choice == '}') {
+			solve(VAOs, color_VAOs, shader, color_idx, &window, user_input);
+		}
+		else {
+			user_input.push_back(choice);
+			make_turn(VAOs, color_VAOs, shader, color_idx, choice, &window);
+		}
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
-
 	}
 
-	free_all_memory(&window, all_verts);
-	
+	free_all_memory(&window, all_verts, all_color_verts);
 	return 0;
 }

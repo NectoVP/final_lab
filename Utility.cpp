@@ -21,13 +21,17 @@ void create_window(GLFWwindow** window) {
 	glViewport(0, 0, width, height);
 }
 
-void free_all_memory(GLFWwindow** window, std::vector<GLfloat*>& all_verts) {
+void free_all_memory(GLFWwindow** window, std::vector<GLfloat*>& all_verts,
+	std::vector<GLfloat*>& all_color_verts) {
 
 	glfwDestroyWindow(*window);
 	glfwTerminate();
 
 	for (int i = 0; i < all_verts.size(); ++i)
 		delete[] all_verts[i];
+
+	for (int i = 0; i < all_color_verts.size(); ++i)
+		delete[] all_color_verts[i];
 }
 
 void init_frame(Shader& shader)
@@ -36,4 +40,25 @@ void init_frame(Shader& shader)
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	shader.Activate();
+}
+
+void do_math_stuff(Shader& shader) {
+	glm::mat4 model = glm::mat4(1.0f);
+	glm::mat4 view = glm::mat4(1.0f);
+	glm::mat4 proj = glm::mat4(1.0f);
+
+	int modelLoc = glGetUniformLocation(shader.ID, "model");
+	int viewLoc = glGetUniformLocation(shader.ID, "view");
+	int projLoc = glGetUniformLocation(shader.ID, "proj");
+
+	view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.5f));
+	proj = glm::perspective(glm::radians(90.0f), (float)(width / height), 0.1f, 100.0f);
+
+	glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
+	glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(proj));
+
+	model = glm::rotate(model, glm::radians(45.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+	model = glm::rotate(model, glm::radians(35.0f), glm::vec3(1.0f, 0.0f, 1.0f));
+	model = glm::scale(model, glm::vec3(1.3f, 1.3f, 1.3f));
+	glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
 }
