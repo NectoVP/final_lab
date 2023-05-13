@@ -176,4 +176,20 @@ std::vector<glm::vec3> side_colors = {
 	glm::vec3(1.0f, 0.97f, 0.0f),
 };
 
+union one_side {
+	uint32_t num_in_file;
+	struct {
+		unsigned int x0 : 3;
+		unsigned int x1 : 3;
+		unsigned int x2 : 3;
+		unsigned int x3 : 3;
+		unsigned int x4 : 3;
+		unsigned int x5 : 3;
+		unsigned int x6 : 3;
+		unsigned int x7 : 3;
+		unsigned int x8 : 3;
+		unsigned int rest : 5;
+	};
+};
+
 #endif

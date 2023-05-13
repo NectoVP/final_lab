@@ -3,6 +3,7 @@
 #include <string>
 #include <cstdlib>
 #include <ctime>
+#include <fstream>
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -221,6 +222,72 @@ void solve(std::vector<GLuint>& VAOs, std::vector<GLuint>& color_VAOs, Shader& s
 	user_input.clear();
 }
 
+void write(std::vector<std::vector<int>>& color_idx) {
+	std::cout << "enter filename:\n";
+	std::string path;
+	std::getline(std::cin, path);
+	std::getline(std::cin, path);
+	path += ".txt";
+
+	std::vector<one_side> all_sides_in_file(6);
+
+	for (int i = 0; i < color_idx.size(); i+=9) {
+		all_sides_in_file[i / 9].x0 = color_idx[i + 0][0];
+		all_sides_in_file[i / 9].x1 = color_idx[i + 1][0];
+		all_sides_in_file[i / 9].x2 = color_idx[i + 2][0];
+		all_sides_in_file[i / 9].x3 = color_idx[i + 3][0];
+		all_sides_in_file[i / 9].x4 = color_idx[i + 4][0];
+		all_sides_in_file[i / 9].x5 = color_idx[i + 5][0];
+		all_sides_in_file[i / 9].x6 = color_idx[i + 6][0];
+		all_sides_in_file[i / 9].x7 = color_idx[i + 7][0];
+		all_sides_in_file[i / 9].x8 = color_idx[i + 8][0];
+	}
+
+	std::ofstream file(path.c_str(), std::ios::app);
+
+	if (!file) {
+		std::cout << "Failed opening file. State won`t be saved\n";
+		return;
+	}
+
+	for (int i = 0; i < all_sides_in_file.size(); ++i) {
+		file << all_sides_in_file[i].num_in_file << " ";
+	}
+}
+
+void read(std::vector<std::vector<int>>& color_idx) {
+	std::cout << "enter filename:\n";
+	std::string path;
+	std::getline(std::cin, path);
+	std::getline(std::cin, path);
+	path += ".txt";
+
+	std::ifstream file(path.c_str(), std::ios::in);
+
+	if (!file) {
+		std::cout << "Failed opening file. State won`t be read\n";
+		return;
+	}
+
+	std::vector<one_side> all_sides_in_file(6);
+
+	for (int i = 0; i < all_sides_in_file.size(); ++i) {
+		file >> all_sides_in_file[i].num_in_file;
+	}
+
+	for (int i = 0; i < color_idx.size(); i += 9) {
+		color_idx[i + 0][0] = all_sides_in_file[i / 9].x0;
+		color_idx[i + 1][0] = all_sides_in_file[i / 9].x1;
+		color_idx[i + 2][0] = all_sides_in_file[i / 9].x2;
+		color_idx[i + 3][0] = all_sides_in_file[i / 9].x3;
+		color_idx[i + 4][0] = all_sides_in_file[i / 9].x4;
+		color_idx[i + 5][0] = all_sides_in_file[i / 9].x5;
+		color_idx[i + 6][0] = all_sides_in_file[i / 9].x6;
+		color_idx[i + 7][0] = all_sides_in_file[i / 9].x7;
+		color_idx[i + 8][0] = all_sides_in_file[i / 9].x8;
+	}
+}
+
 int main() {
 
 	srand(time(NULL));
@@ -261,6 +328,13 @@ int main() {
 		}
 		else if (choice == '}') {
 			solve(VAOs, color_VAOs, shader, color_idx, &window, user_input);
+		}
+		else if (choice == '<') {
+			write(color_idx);
+		}
+		else if (choice == '>') {
+			read(color_idx);
+			draw(VAOs, color_VAOs, shader, void_v, color_idx, void_v, void_v, false);
 		}
 		else {
 			user_input.push_back(choice);
